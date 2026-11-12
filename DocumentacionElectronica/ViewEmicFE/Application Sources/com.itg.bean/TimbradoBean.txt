@@ -1,0 +1,2202 @@
+package com.itg.bean;
+
+
+import com.itg.DE.EmisionCP.dto.Mercancia;
+import com.itg.DE.FacturacionElectronica.AppModuleEFImpl;
+import com.itg.DE.FacturacionElectronica.dto.CartaPorteDetails;
+import com.itg.DE.FacturacionElectronica.dto.CartaPorteMaster;
+import com.itg.DE.FacturacionElectronica.dto.CartaPorteUbicacionesDTO;
+//import com.itg.DE.FacturacionElectronica.dto.ErrorDTO;
+import com.itg.DE.FacturacionElectronica.dto.FacturasDTO;
+import com.itg.DE.FacturacionElectronica.dto.FacturasPDF;
+import com.itg.DE.FacturacionElectronica.dto.LineasDTO;
+import com.itg.DE.Utils.AppModuleDEImpl;
+
+import java.io.ByteArrayInputStream;
+import java.io.ByteArrayOutputStream;
+import java.io.InputStream;
+
+import java.text.DecimalFormat;
+
+import java.text.ParseException;
+
+import java.util.ArrayList;
+//import java.util.Date;
+import java.util.List;
+
+import javax.faces.context.FacesContext;
+
+import javax.faces.model.SelectItem;
+
+import javax.servlet.http.HttpServletRequest;
+
+import javax.xml.bind.JAXBException;
+import javax.xml.parsers.DocumentBuilder;
+import javax.xml.parsers.DocumentBuilderFactory;
+import javax.xml.parsers.ParserConfigurationException;
+import javax.xml.transform.Result;
+import javax.xml.transform.Source;
+import javax.xml.transform.Transformer;
+import javax.xml.transform.TransformerConfigurationException;
+import javax.xml.transform.TransformerException;
+import javax.xml.transform.TransformerFactory;
+import javax.xml.transform.dom.DOMSource;
+import javax.xml.transform.stream.StreamResult;
+
+import oracle.adf.view.rich.component.rich.layout.RichPanelFormLayout;
+
+import oracle.jbo.ApplicationModule;
+import oracle.jbo.client.Configuration;
+
+import oracle.xdo.XDOException;
+import oracle.xdo.template.FOProcessor;
+import oracle.xdo.template.RTFProcessor;
+
+import org.w3c.dom.DOMImplementation;
+import org.w3c.dom.Document;
+import org.w3c.dom.Element;
+import org.w3c.dom.Text;
+
+
+public class TimbradoBean {
+
+    AppModuleEFImpl am;
+    AppModuleDEImpl AppModule;
+
+    private String msgTimbre;
+    private String uuid;
+    private String trxNumber;
+    private String tipoTransaccion;
+    private RichPanelFormLayout timbrado;
+    private String customerTrxId;
+
+    //Tabla Facturas
+    FacturasDTO facturas;
+
+    private String refBancaria;
+    private String rfcReceptor;
+    private String nombreReceptor;
+    private String regFiscalReceptor;
+    private String domFiscalReceptor;
+    private Double total;
+    private String version;
+    private String fechaTimbrado;
+    private String nombreEmisor;
+    private String serie;
+
+    //Listas de valores
+    List<SelectItem> organizacionList;
+    List<SelectItem> tipoTransaccionList;
+    List<SelectItem> customBussinesList;
+    List<SelectItem> customtipoTransaccionList;
+
+
+    //variables para PDF
+    private String fecha;
+    private String folio;
+    private String noCertificado;
+    private Double tipoCambio;
+    private String tipoRelacion;
+    private String cfdiRelacionados;
+    private String moneda;
+    private String regimen;
+    private String rfcEmisor;
+    private String crTeference;
+    private String tipoDoc;
+    private String usoCfdi;
+    private String formaDePago;
+    private String metodoPago;
+    private String tipoComprobante;
+    private String condicionesPago;
+    private String sello;
+    private String exportacionFlag;
+    private String cadSat;
+    private String selloSat;
+    private String noCetificadoSat;
+    private String cadenaOriginal;
+    private String imgQr;
+    private String imagen;
+    private String buid;
+    private String descripcion;
+    private String codigo;
+    private int numLinea;
+    private String unidad;
+    private String claveUnidad;
+    private String cps;
+    private Object cantidad;
+    private double precio;
+    private double importe;
+    private String objetoImp;
+    private double subTotal;
+    private double tImpTrasladados;
+    private double tImpRetenidos;
+    private double tasa;
+    private String tasaE = null;
+    private String letra;
+    private String letraI;
+    private String rTelefono;
+    private String rEmail;
+    private String eTelefono;
+    private String eEmail;
+    private String noCliente;
+    private String tertrxdate;
+    private String eCalle;
+    private String eNumExt;
+    private String eNumInt;
+    private String eColonia;
+    private String eLocalidad;
+    private String eCP;
+    private String ePais;
+    private String eMunicipio;
+    private String eEstado;
+    private String eDomicilioFiscal;
+    private String rDomicilioFiscal;
+    private String rCalle;
+    private String rMunicipio;
+    private String rEstado;
+    private String rPais;
+    private String rDireccionEnvio;
+    private String clavePais;
+    private String clienteFer;
+    private String facturaFer;
+    private String fechaFer;
+    private String beneFer;
+    private String cuentaBene;
+    private String banco;
+    private String clabeInter;
+    private double totalfer;
+    private String comentarios;
+    private String specialInstr;
+    private String exportacion;
+    private int cCajas;
+    private int tCajas;
+    private String tLineas;
+    private String purchaseOrder;
+    private String grossWeight;
+    private String contrato;
+    private String notaPais;
+    private String bodega;
+    private String contenedor;
+    private String barco;
+    private String registroFiscal;
+    private String incoterms;
+    private String cartaPorteFolio;
+    private String domFiscalSuc;
+    //KOFANOR
+    private String ocCliente;
+    private String selloCarga;
+    private String selloDescarga;
+    private String noProveedor;
+    private String noPosicion;
+    private String noGr;
+
+    private String fraccionArancelaria;
+    private String unidadAduana;
+    private String valorUnitAduana;
+    private String cantidadAduana;
+    private String valorDolares;
+
+    //CARTA PORTE MASTER
+    private String folioCP;
+    private String serieCP;
+    private String rfcEmpresa;
+    private String nombreEmpresa;
+    private String tipoDocumentoCP;
+   /* private String idOracleClient;
+    private String rfcClient;
+    private String nombreClient;
+    private String estadoClient;
+    private String localiClient;
+    private String municipioClient;
+    private String colClient;
+    private String paisClient;*/
+    private String nombreChofer;
+    private String licChofer;
+    private String calleChofer;
+    private String rfcChofer;
+    private String paisChofer;
+    private String colChofer;
+    private String numCChofer;
+    private String municipioChofer;
+    private String locChofer;
+    private String estadoChofer;
+    private String cpChofer;
+    private String fechaLlegada;
+    private String placasVehicular;
+    private String tipoVehicular;
+    private String remolque;
+    private String tipoRemolque1;
+    private String tipoRemolque2;
+    private String placaRemolque1;
+    private String placaRemolque2;
+    private String distanciaRecorrida;
+    private String tipoFigura;
+    private String parteTransporte;
+    private String permSCT;
+    private String anioModeloVM;
+    private String nombreAseg;
+    private String numPolizaSeg;
+    private String pesoBrutoTotal;
+    private String numTotalMercancias;
+    private String pesototKilos;
+    private String transpInternac;
+    private String numPermisoSCT;
+    private String cveTransporte;
+    private String versionCP;
+    private String pesoBrutoVehicular; //Actualizacion 3.0
+    private String idCCP; //Actualizacion 3.0
+
+    //CARTA PORTE UBICACIONES
+    //   private String idCPMaster;
+    /*private String tipoUbicacion;
+    private String clienteOrigen;*/
+    private String calleOrigen;
+    private String estadoOrigen;
+    private String localidadOrigen;
+    private String municipioOrigen;
+    private String coloniaOrigen;
+    private String paisOrigen;
+    private String codigoPostalOrigen;
+    /*private String clienteDestino;*/
+    private String calleDestino;
+    private String estadoDestino;
+    private String localidadDestino;
+    private String municipioDestino;
+    private String coloniaDestino;
+    private String paisDestino;
+    private String codigoPostalDestino;
+
+    //CARTA PORTE DETAILS
+    private String idCP;
+    private String idCPMaster;
+    private String codigoCP;
+    private String descripcionCP;
+    private String unidadCP;
+    private String claveSatCP;
+    private String cantidadCP;
+    private String precioUnitarioCP;
+    private String pesoKgCP;
+
+    private String leyenda;
+    private String timbrarFlag;
+
+    public TimbradoBean() throws JAXBException, ParseException {
+        createAppModule();
+        List<FacturasPDF> listFacturasLot = new ArrayList<FacturasPDF>();
+
+
+        HttpServletRequest request =
+            (HttpServletRequest)FacesContext.getCurrentInstance().getExternalContext().getRequest();
+        customerTrxId = request.getParameter("_afrWindowId");
+        System.out.println("customerTrxId: " + customerTrxId);
+        timbrarFlag = request.getParameter("tFlag");
+        System.out.println("timbrarFlag: " + timbrarFlag);
+        if (customerTrxId != null) {
+            try {
+                msgTimbre = am.getTimbrado(customerTrxId, timbrarFlag);
+            } catch (Exception e) {
+                am.mensageERROR("Error en el timbrado");
+            }
+        }else{
+                am.mensageERROR("Error en el timbrado");
+            }
+        /*else {
+            msgTimbre = am.getTimbrado("300000364821884", timbrarFlag);
+        }*/
+
+        uuid = am.getUuid();
+        trxNumber = am.getTrx_Number();
+        folio = am.getSerie() + " - " + am.getFolioT();
+        System.out.println("FOLIO final.. " + folio);
+
+        FacturasPDF CabeceroPDF = new FacturasPDF();
+        // System.out.println("Id para PDF: " + customerTrxId);
+        CabeceroPDF = am.getCabecero(customerTrxId);
+
+        if (CabeceroPDF != null) {
+            //   System.out.println("Entra al cabecero");
+            listFacturasLot.add(CabeceroPDF);
+        } //"300000003915888"
+
+        System.out.println("Lista antes de metodo: " + listFacturasLot.size());
+        /*     String appmoddos = "com.itg.DE.Utils.AppModuleDE";
+        String confignamedos = "AppModuleDELocal";
+        ApplicationModule amdos =
+            Configuration.createRootApplicationModule(appmoddos,
+                                                      confignamedos);
+        AppModuleDEImpl AppMod = (AppModuleDEImpl)amdos; */
+        generarPdf(listFacturasLot);
+
+        liberarAppModule();
+    }
+
+    private void generarPdf(final List<FacturasPDF> listFacturasLote) {
+
+        Thread th = new Thread() {
+
+            @Override
+            public void run() {
+                // System.out.println("Entra al run");
+                //     AppModuleEFImpl conexion = new AppModuleEFImpl(conDB);
+
+                InputStream dataSource = null;
+                createAppModule();
+
+                //   System.out.println("Lista antes del for: " + listFacturasLote.size());
+                for (int i = 0; i <= listFacturasLote.size() - 1; i++) {
+                    if (listFacturasLote != null) {
+                        try {
+                            //Thread.sleep(10000);
+                            String customerTrxIdPDF = null;
+                            //   System.out.println("Entra al for");
+                            customerTrxIdPDF =
+                                    listFacturasLote.get(i).getCustIdPDF();
+                            //  System.out.println("Cust: " + customerTrxIdPDF);
+                            List<LineasDTO> listLineasDTO =
+                                am.getLineas(customerTrxIdPDF);
+
+                            for (int k = 0; k <= listLineasDTO.size() - 1; k++) {
+                                leyenda = listLineasDTO.get(k).getLeyenda();
+                            }
+
+                            List<Mercancia> listComExt =
+                                am.getMercancia(customerTrxIdPDF);
+
+                            refBancaria = am.getRefBancari(customerTrxIdPDF);
+
+                            version = listFacturasLote.get(i).getVersion();
+                            serie = listFacturasLote.get(i).getSerie();
+                            fecha = listFacturasLote.get(i).getFechaFactura();
+                            folio = listFacturasLote.get(i).getNoFactura();
+                            uuid = listFacturasLote.get(i).getUuid();
+                            noCertificado =
+                                    listFacturasLote.get(i).getNoCertificado();
+                            moneda = listFacturasLote.get(i).getMoneda();
+                            tipoCambio =
+                                    listFacturasLote.get(i).getTipoCambio();
+                            tipoRelacion =
+                                    listFacturasLote.get(i).getTipoRelacion();
+                            cfdiRelacionados =
+                                    listFacturasLote.get(i).getUuidRelacionados();
+                            tipoTransaccion =
+                                    listFacturasLote.get(i).getTransaccionAr();
+                            trxNumber = listFacturasLote.get(i).getTrxNumber();
+                            crTeference =
+                                    listFacturasLote.get(i).getCtReference();
+                            tipoDoc =
+                                    listFacturasLote.get(i).getTipoDocumento();
+
+                            rfcEmisor = listFacturasLote.get(i).getRfcEmisor();
+                            nombreEmisor =
+                                    listFacturasLote.get(i).getNombreEmisor();
+                            regimen = listFacturasLote.get(i).getRegimen();
+                            eTelefono = listFacturasLote.get(i).getETelefono();
+                            eEmail = listFacturasLote.get(i).getEEmail();
+                            eMunicipio =
+                                    listFacturasLote.get(i).getEMunicipio();
+                            eEstado = listFacturasLote.get(i).getEEstado();
+                            eDomicilioFiscal =
+                                    listFacturasLote.get(i).getEDomicilioFiscal();
+                            eCalle = listFacturasLote.get(i).getECalle();
+                            eNumExt = listFacturasLote.get(i).getENumExt();
+                            eNumInt = listFacturasLote.get(i).getENumInt();
+                            eColonia = listFacturasLote.get(i).getEColonia();
+                            eLocalidad =
+                                    listFacturasLote.get(i).getELocalidad();
+                            eCP = listFacturasLote.get(i).getECodigoPostal();
+                            ePais = listFacturasLote.get(i).getEPais();
+                            rDomicilioFiscal =
+                                    listFacturasLote.get(i).getRDomicilioFiscal();
+                            rfcReceptor =
+                                    listFacturasLote.get(i).getRfcReceptor();
+                            nombreReceptor =
+                                    listFacturasLote.get(i).getNombreReceptor();
+                            regFiscalReceptor =
+                                    listFacturasLote.get(i).getRegFiscalReceptor();
+                            domFiscalReceptor =
+                                    listFacturasLote.get(i).getDomFiscalReceptor();
+                            usoCfdi = listFacturasLote.get(i).getUsoCfdi();
+                            rTelefono = listFacturasLote.get(i).getRTelefono();
+                            rEmail = listFacturasLote.get(i).getREmail();
+                            noCliente = listFacturasLote.get(i).getNoCliente();
+                            rCalle = listFacturasLote.get(i).getRCalle();
+                            rMunicipio =
+                                    listFacturasLote.get(i).getRMunicipio();
+                            rEstado = listFacturasLote.get(i).getREstado();
+                            rPais = listFacturasLote.get(i).getRPais();
+                            rDireccionEnvio =
+                                    listFacturasLote.get(i).getRDireccionEnvio();
+                            clavePais = listFacturasLote.get(i).getRPais();
+
+                            formaDePago =
+                                    listFacturasLote.get(i).getFormaPago();
+                            condicionesPago =
+                                    listFacturasLote.get(i).getTerminoPago();
+                            metodoPago =
+                                    listFacturasLote.get(i).getMetodoDePago();
+                            tipoComprobante = listFacturasLote.get(i).getTipoComprobante();
+                            if (metodoPago.compareToIgnoreCase("PPD") == 0) {
+                                metodoPago =
+                                        metodoPago + "- Pago en parcialidades o diferido";
+                            }
+                            sello = listFacturasLote.get(i).getSello();
+                            exportacionFlag =
+                                    listFacturasLote.get(i).getExportacionFlag();
+                            cadSat = listFacturasLote.get(i).getCadSat();
+                            selloSat = listFacturasLote.get(i).getSelloSat();
+                            fechaTimbrado =
+                                    listFacturasLote.get(i).getFechaTimbrado();
+                            noCetificadoSat =
+                                    listFacturasLote.get(i).getNoCertificadoSat();
+                            cadenaOriginal =
+                                    listFacturasLote.get(i).getCadenaOriginal();
+                            imgQr = listFacturasLote.get(i).getImgQr();
+                            imagen = listFacturasLote.get(i).getImagen();
+                            total = listFacturasLote.get(i).getTotal();
+                            //
+                            subTotal = listFacturasLote.get(i).getSubTotal();
+                            tImpTrasladados =
+                                    listFacturasLote.get(i).getTImpTrasladados();
+                            tImpRetenidos =
+                                    listFacturasLote.get(i).getTImpRetenidos();
+                            tasa = listFacturasLote.get(i).getTasa();
+                            tasaE = listFacturasLote.get(i).getTasaE();
+                            if (tasaE == null) {
+                                tasaE = "NA";
+                            }
+                            buid = listFacturasLote.get(i).getBuId();
+                            letra = listFacturasLote.get(i).getLetra();
+                            letraI = listFacturasLote.get(i).getLetraI();
+                            tertrxdate =
+                                    listFacturasLote.get(i).getTertrxdate();
+
+                            clienteFer =
+                                    listFacturasLote.get(i).getNombreReceptor();
+                            facturaFer =
+                                    listFacturasLote.get(i).getTrxNumber();
+                            fechaFer =
+                                    listFacturasLote.get(i).getFechaFactura();
+                            beneFer =
+                                    listFacturasLote.get(i).getBeneficiarioFer();
+                            totalfer = listFacturasLote.get(i).getTotal();
+                            cuentaBene =
+                                    listFacturasLote.get(i).getCuentaBene();
+                            banco = listFacturasLote.get(i).getBanco();
+                            clabeInter =
+                                    listFacturasLote.get(i).getClabeInter();
+                            comentarios =
+                                    listFacturasLote.get(i).getComentarios();
+                            specialInstr =
+                                    listFacturasLote.get(i).getSpecialInstr();
+                            purchaseOrder =
+                                    listFacturasLote.get(i).getPurchaseOrder();
+                            registroFiscal =
+                                    listFacturasLote.get(i).getRegistroFiscal();
+                            exportacion =
+                                    listFacturasLote.get(i).getExportacion();
+                            if (exportacion != null &&
+                                exportacion.compareToIgnoreCase("Comercio Exterior/Exportacion") ==
+                                0) {
+                                exportacion = "Exportacion";
+                            }
+                            ocCliente = listFacturasLote.get(i).getOcCliente();
+                            selloCarga =
+                                    listFacturasLote.get(i).getSelloCarga();
+                            selloDescarga =
+                                    listFacturasLote.get(i).getSelloDescarga();
+                            noProveedor =
+                                    listFacturasLote.get(i).getNoProveedor();
+                            noPosicion =
+                                    listFacturasLote.get(i).getNoPosicion();
+                            noGr = listFacturasLote.get(i).getNoGr();
+                            cartaPorteFolio =
+                                    listFacturasLote.get(i).getCartaPorteFolio();
+                            domFiscalSuc =
+                                    listFacturasLote.get(i).getDomFiscalSuc();
+
+                            List<CartaPorteMaster> cpMaster =
+                                am.getCartaPorteMaster(cartaPorteFolio); //**folio
+                            List<CartaPorteDetails> cpDetails =
+                                am.getCPDetails(cartaPorteFolio);
+                            List<CartaPorteUbicacionesDTO> listCPUbicaciones =
+                                am.getCPUbicaciones(cartaPorteFolio);
+
+                            try {
+                                DocumentBuilderFactory factory =
+                                    DocumentBuilderFactory.newInstance();
+                                DocumentBuilder builder =
+                                    factory.newDocumentBuilder();
+                                DOMImplementation implementation =
+                                    builder.getDOMImplementation();
+                                Document document =
+                                    implementation.createDocument(null,
+                                                                  "DATA_DS",
+                                                                  null);
+                                document.setXmlVersion("1.0");
+                                //Main Node
+                                Element raiz = document.getDocumentElement();
+
+                                //Item Node
+                                Element itemNode =
+                                    document.createElement("G_1");
+
+                                Text txtVersion =
+                                    document.createTextNode(version); //version
+                                Text txtSerie =
+                                    document.createTextNode(serie); //serie
+                                Text txtFecha = document.createTextNode(fecha);
+                                Text txtFolio =
+                                    document.createTextNode(folio); //folio
+                                Text txtUuid = document.createTextNode(uuid);
+                                Text txtNoCertificado =
+                                    document.createTextNode(noCertificado);
+                                Text txtMoneda =
+                                    document.createTextNode(moneda);
+                                Text txtTipoCambio =
+                                    document.createTextNode("" + tipoCambio);
+                                Text txtTipoRelacion =
+                                    document.createTextNode(tipoRelacion);
+                                Text txtCfdiRelacionados =
+                                    document.createTextNode(cfdiRelacionados);
+                                Text txtTipoTransaccion =
+                                    document.createTextNode(tipoTransaccion);
+                                Text txtTrxNumber =
+                                    document.createTextNode(trxNumber);
+                                Text txtCtReference =
+                                    document.createTextNode(crTeference);
+                                Text txtTipoDoc =
+                                    document.createTextNode(tipoDoc);
+                                Text txtRfcEmisor =
+                                    document.createTextNode(rfcEmisor);
+                                Text txtNombreEmisor =
+                                    document.createTextNode(nombreEmisor);
+                                Text txtRegimen =
+                                    document.createTextNode(regimen);
+                                Text txtETelefono =
+                                    document.createTextNode(eTelefono);
+                                Text txtEEmail =
+                                    document.createTextNode(eEmail);
+                                Text txtEMunicipio =
+                                    document.createTextNode(eMunicipio);
+                                Text txtEEstado =
+                                    document.createTextNode(eEstado);
+                                Text txtEDomicilioFiscal =
+                                    document.createTextNode(eDomicilioFiscal);
+                                Text txteCalle =
+                                    document.createTextNode(eCalle);
+                                Text txteNumExt =
+                                    document.createTextNode(eNumExt);
+                                Text txteNumInt =
+                                    document.createTextNode(eNumInt);
+                                Text txteColonia =
+                                    document.createTextNode(eColonia);
+                                Text txteLocalidad =
+                                    document.createTextNode(eLocalidad);
+                                Text txteCP = document.createTextNode(eCP);
+                                Text txtePais = document.createTextNode(ePais);
+                                Text txteDomiciilioSuc =
+                                    document.createTextNode(domFiscalSuc);
+                                Text txtRDomicilioFiscal =
+                                    document.createTextNode(rDomicilioFiscal);
+                                Text txtRfcReceptor =
+                                    document.createTextNode(rfcReceptor);
+                                Text txtNombreReceptor =
+                                    document.createTextNode(nombreReceptor);
+                                Text txtRegFiscalReceptor =
+                                    document.createTextNode(regFiscalReceptor);
+                                Text txtDomFiscalReceptor =
+                                    document.createTextNode(domFiscalReceptor);
+                                Text txtUsoCfdi =
+                                    document.createTextNode(usoCfdi);
+                                Text txtRTelefono =
+                                    document.createTextNode(rTelefono);
+                                Text txtREmail =
+                                    document.createTextNode(rEmail);
+                                // Text txtRTributario =  document.createTextNode(rTributario);
+                                Text txtNoCliente =
+                                    document.createTextNode(noCliente);
+                                Text txtRCalle =
+                                    document.createTextNode(rCalle);
+                                Text txtRMunicipio =
+                                    document.createTextNode(rMunicipio);
+                                Text txtREstado =
+                                    document.createTextNode(rEstado);
+                                Text txtRPais = document.createTextNode(rPais);
+                                Text txtRDireccionEnvio =
+                                    document.createTextNode(rDireccionEnvio);
+                                Text txtClavePais =
+                                    document.createTextNode(clavePais);
+
+                                Text txtFormaDePago =
+                                    document.createTextNode(formaDePago);
+                                Text txtCondicionesPago =
+                                    document.createTextNode(condicionesPago);
+                                Text txtMetodoPago =
+                                    document.createTextNode(metodoPago);
+                                Text txtTipoComprobante = document.createTextNode(tipoComprobante);
+                                Text txtSello = document.createTextNode(sello);
+                                Text txtExportacionFlag =
+                                    document.createTextNode(exportacionFlag);
+                                Text txtCadSat =
+                                    document.createTextNode(cadSat);
+                                Text txtSelloSat =
+                                    document.createTextNode(selloSat);
+                                Text txtFechaTimbrado =
+                                    document.createTextNode(fechaTimbrado);
+                                Text txtNoCetificadoSat =
+                                    document.createTextNode(noCetificadoSat);
+                                Text txtCadenaOriginal =
+                                    document.createTextNode(cadenaOriginal);
+                                Text txtImgQr = document.createTextNode(imgQr);
+                                Text txtImagen =
+                                    document.createTextNode(imagen);
+                                Text txtBuid = document.createTextNode(buid);
+                                DecimalFormat formateador =
+                                    new DecimalFormat("###,###,##0.00");
+                                Text txtTotal =
+                                    document.createTextNode(formateador.format(total));
+                                Text txtSubTotal =
+                                    document.createTextNode(formateador.format(subTotal));
+                                Text txtTImpTrasladados =
+                                    document.createTextNode("" +
+                                                            tImpTrasladados);
+                                Text txtTImpRetenidos =
+                                    document.createTextNode("" +
+                                                            tImpRetenidos);
+                                Text txtTasa = null;
+                                if (tasaE.equals("E")) {
+                                    txtTasa =
+                                            document.createTextNode("" + tasaE);
+                                } else {
+                                    txtTasa =
+                                            document.createTextNode("" + tasa);
+                                }
+                                Text txtLetra = document.createTextNode(letra);
+                                Text txtLetraI =
+                                    document.createTextNode(letraI);
+                                Text txtTertrxdate =
+                                    document.createTextNode(tertrxdate);
+
+                                Text txtClienteFer =
+                                    document.createTextNode(clienteFer);
+                                Text txtFacturaFer =
+                                    document.createTextNode(facturaFer);
+                                Text txtFechaFer =
+                                    document.createTextNode(fechaFer);
+                                Text txtBeneFer =
+                                    document.createTextNode(beneFer);
+                                Text txtTotalfer =
+                                    document.createTextNode(formateador.format(totalfer));
+                                Text txtComentarios =
+                                    document.createTextNode(comentarios);
+                                Text txtLeyenda =
+                                    document.createTextNode(leyenda);
+                                Text txtSpecialInstr =
+                                    document.createTextNode(specialInstr);
+                                Text txtPurchasOrder =
+                                    document.createTextNode(purchaseOrder);
+                                //kofanor
+                                Text txtOcCliente =
+                                    document.createTextNode(ocCliente);
+                                Text txtSelloCarga =
+                                    document.createTextNode(selloCarga);
+                                Text txtselloDescarga =
+                                    document.createTextNode(selloDescarga);
+                                Text txtNoProveedor =
+                                    document.createTextNode(noProveedor);
+                                Text txtNoPosicion =
+                                    document.createTextNode(noPosicion);
+                                Text txtNoGr = document.createTextNode(noGr);
+
+                                Text txtCuentaBene =
+                                    document.createTextNode(cuentaBene);
+                                Text txtBanco = document.createTextNode(banco);
+                                Text txtClabeInter =
+                                    document.createTextNode(clabeInter);
+                                Text txtRegistroFiscal =
+                                    document.createTextNode(registroFiscal);
+                                Text txtRefBancaria =
+                                    document.createTextNode(refBancaria);
+
+
+                                Text txtDescripcionL =
+                                    document.createTextNode("DESCRIPCION");
+                                Text txtTotalFacL =
+                                    document.createTextNode("TOTAL FACTURA");
+                                Text txtCodigoL =
+                                    document.createTextNode("CODIGO");
+                                Text txtUnidadL =
+                                    document.createTextNode("UNIDAD");
+                                Text txtClaveUnidadL =
+                                    document.createTextNode("CLAVE UNIDAD");
+                                Text txtClaveProdServL =
+                                    document.createTextNode("CLAVE, PRODUCTO O SERVICIO");
+                                Text txtObjetoImpL =
+                                    document.createTextNode("OBJETO IMP");
+                                Text txtcadenaOriginalL =
+                                    document.createTextNode("CADENA ORIGINAL DEL COMPROBANTE FISCAL DIGITAL (CFDI)");
+                                Text txtCantidadL =
+                                    document.createTextNode("CANTIDAD");
+                                Text txtPrecioL =
+                                    document.createTextNode("PRECIO UNITARIO");
+                                Text txtImporteL =
+                                    document.createTextNode("IMPORTE");
+                                Text txtSelloL =
+                                    document.createTextNode("SELLO DEL COMPROBANTE FISCAL DIGITAL (CFDI)");
+                                Text txtSelloSatL =
+                                    document.createTextNode("SELLO DEL SAT");
+                                Text txtCadSatL =
+                                    document.createTextNode("CADENA ORIGINAL DEL COMPLEMENTO DE CERTIFICACIÓN DIGITAL DEL SAT");
+
+                                Element NodeVersion =
+                                    document.createElement("VERSION");
+                                NodeVersion.appendChild(txtVersion);
+                                Element NodeSerie =
+                                    document.createElement("SERIE");
+                                NodeSerie.appendChild(txtSerie);
+                                Element NodeFecha =
+                                    document.createElement("FECHAFACTURA");
+                                NodeFecha.appendChild(txtFecha);
+                                Element NodeFolio =
+                                    document.createElement("FOLIO");
+                                NodeFolio.appendChild(txtFolio);
+                                Element NodeUuid =
+                                    document.createElement("UUID");
+                                NodeUuid.appendChild(txtUuid);
+                                Element NodeNoCertificado =
+                                    document.createElement("NOCERTIFICADO");
+                                NodeNoCertificado.appendChild(txtNoCertificado);
+                                Element NodeMoneda =
+                                    document.createElement("MONEDA");
+                                NodeMoneda.appendChild(txtMoneda);
+                                Element NodeTipoCambio =
+                                    document.createElement("TIPOCAMBIO");
+                                NodeTipoCambio.appendChild(txtTipoCambio);
+                                Element NodeTipoRelacion =
+                                    document.createElement("TIPORELACION");
+                                NodeTipoRelacion.appendChild(txtTipoRelacion);
+                                Element NodeCfdiRelacionados =
+                                    document.createElement("UUIDRELACIONADO");
+                                NodeCfdiRelacionados.appendChild(txtCfdiRelacionados);
+                                Element NodeTipoTransaccion =
+                                    document.createElement("TIPOTRANSACCION");
+                                NodeTipoTransaccion.appendChild(txtTipoTransaccion);
+                                Element NodeTrxNumber =
+                                    document.createElement("TRX_NUMBER");
+                                NodeTrxNumber.appendChild(txtTrxNumber);
+                                Element NodeCtReference =
+                                    document.createElement("PEDIDO");
+                                NodeCtReference.appendChild(txtCtReference);
+                                Element NodeTipoDoc =
+                                    document.createElement("TIPODOC");
+                                NodeTipoDoc.appendChild(txtTipoDoc);
+                                Element NodeNombreEmisor =
+                                    document.createElement("NOMBREEMISOR");
+                                NodeNombreEmisor.appendChild(txtNombreEmisor);
+                                Element NodeRfcEmisor =
+                                    document.createElement("RFCEMISOR");
+                                NodeRfcEmisor.appendChild(txtRfcEmisor);
+                                Element NodeRegimen =
+                                    document.createElement("REGIMEN");
+                                NodeRegimen.appendChild(txtRegimen);
+                                Element NodeETelefono =
+                                    document.createElement("TELEFONOE");
+                                NodeETelefono.appendChild(txtETelefono);
+                                Element NodeEEmail =
+                                    document.createElement("EMAILEMISOR");
+                                NodeEEmail.appendChild(txtEEmail);
+                                Element NodeEMunicipio =
+                                    document.createElement("COLONIAEMISOR");
+                                NodeEMunicipio.appendChild(txtEMunicipio);
+                                Element NodeEEstado =
+                                    document.createElement("ESTADOEMISOR");
+                                NodeEEstado.appendChild(txtEEstado);
+
+                                //
+                                Element NodeECalle =
+                                    document.createElement("EMISORCALLE");
+                                NodeECalle.appendChild(txteCalle);
+                                Element NodeENumExt =
+                                    document.createElement("EMISORNUMEXT");
+                                NodeENumExt.appendChild(txteNumExt);
+                                Element NodeENumInt =
+                                    document.createElement("EMISORNUMINT");
+                                NodeENumInt.appendChild(txteNumInt);
+                                Element NodeEColonia =
+                                    document.createElement("EMISORCOLONIA");
+                                NodeEColonia.appendChild(txteColonia);
+                                Element NodeELocalidad =
+                                    document.createElement("EMISORLOCALIDAD");
+                                NodeELocalidad.appendChild(txteLocalidad);
+                                Element NodeECP =
+                                    document.createElement("EMISORCP");
+                                NodeECP.appendChild(txteCP);
+                                Element NodeEPais =
+                                    document.createElement("EMISORPAIS");
+                                NodeEPais.appendChild(txtePais);
+                                //
+
+                                Element NodeEDomicilioFiscal =
+                                    document.createElement("DOMICILIOFISCAL");
+                                NodeEDomicilioFiscal.appendChild(txtEDomicilioFiscal);
+                                Element NodeEdomiciliosuc =
+                                    document.createElement("DOMICILIOSUCURSAL");
+                                NodeEdomiciliosuc.appendChild(txteDomiciilioSuc);
+                                Element NodeRDomicilioFiscal =
+                                    document.createElement("DOMOFISCALCLIENTE");
+                                NodeRDomicilioFiscal.appendChild(txtRDomicilioFiscal);
+
+                                Element NodeRfcReceptor =
+                                    document.createElement("RFCRECEPTOR");
+                                NodeRfcReceptor.appendChild(txtRfcReceptor);
+                                Element NodeNombreReceptor =
+                                    document.createElement("NOMBRERECEPTOR");
+                                NodeNombreReceptor.appendChild(txtNombreReceptor);
+                                Element NodeRegFiscalReceptor =
+                                    document.createElement("REGFISCALRECEPTOR");
+                                NodeRegFiscalReceptor.appendChild(txtRegFiscalReceptor);
+                                Element NodeDomFiscalReceptor =
+                                    document.createElement("DOMFISCALRECEPTOR");
+                                NodeDomFiscalReceptor.appendChild(txtDomFiscalReceptor);
+                                Element NodeUsoCfdi =
+                                    document.createElement("USOCFDI");
+                                NodeUsoCfdi.appendChild(txtUsoCfdi);
+                                Element NodeRTelefono =
+                                    document.createElement("TELEFONORECEPTOR");
+                                NodeRTelefono.appendChild(txtRTelefono);
+                                Element NodeREmail =
+                                    document.createElement("EMAILRECEPTOR");
+                                NodeREmail.appendChild(txtREmail);
+                                //  Element NodeRTributario= document.createElement("NUMREGIDTRIB");
+                                //NodeRTributario.appendChild(txtRTributario);
+                                Element NodeNoCliente =
+                                    document.createElement("NOCLIENTERECEPTOR");
+                                NodeNoCliente.appendChild(txtNoCliente);
+                                Element NodeRCalle =
+                                    document.createElement("CALLERECEPTOR");
+                                NodeRCalle.appendChild(txtRCalle);
+                                Element NodeRMunicipio =
+                                    document.createElement("MUNICIPIORECEPTOR");
+                                NodeRMunicipio.appendChild(txtRMunicipio);
+                                Element NodeREstado =
+                                    document.createElement("ESTADORECEPTOR");
+                                NodeREstado.appendChild(txtREstado);
+                                Element NodeRPais =
+                                    document.createElement("PAISRECEPTOR");
+                                NodeRPais.appendChild(txtRPais);
+                                Element NodeRDireccionEnvio =
+                                    document.createElement("DIRECCIONENVIO");
+                                NodeRDireccionEnvio.appendChild(txtRDireccionEnvio);
+                                Element NodeClavePais =
+                                    document.createElement("CLAVEPAIS");
+                                NodeClavePais.appendChild(txtClavePais);
+
+                                Element NodeCodigoL =
+                                    document.createElement("CODIGO");
+                                NodeCodigoL.appendChild(txtCodigoL);
+                                Element NodeDescripcionL =
+                                    document.createElement("DESCRIPCIONH");
+                                NodeDescripcionL.appendChild(txtDescripcionL);
+                                Element NodeUnidadL =
+                                    document.createElement("UNIDADH");
+                                NodeUnidadL.appendChild(txtUnidadL);
+                                Element NodeClaveUnidadL =
+                                    document.createElement("CLAVEUNIDADH");
+                                NodeClaveUnidadL.appendChild(txtClaveUnidadL);
+                                Element NodeClaveUProdServL =
+                                    document.createElement("CLAVEPRODSERVH");
+                                NodeClaveUProdServL.appendChild(txtClaveProdServL);
+                                Element NodeObjetoImpL =
+                                    document.createElement("OBJETOIMPU");
+                                NodeObjetoImpL.appendChild(txtObjetoImpL);
+                                Element NodeCantidadL =
+                                    document.createElement("CANTIDADH");
+                                NodeCantidadL.appendChild(txtCantidadL);
+                                Element NodePrecioUnitL =
+                                    document.createElement("PRECIOUNITARIO");
+                                NodePrecioUnitL.appendChild(txtPrecioL);
+                                Element NodeImporteL =
+                                    document.createElement("IMPORTEH");
+                                NodeImporteL.appendChild(txtImporteL);
+                                Element NodetotalFacL =
+                                    document.createElement("TOTALFAC");
+                                NodetotalFacL.appendChild(txtTotalFacL);
+                                Element NodeCadOrigL =
+                                    document.createElement("CADENAORIGINAL");
+                                NodeCadOrigL.appendChild(txtcadenaOriginalL);
+                                Element NodeSelloL =
+                                    document.createElement("SELLOL");
+                                NodeSelloL.appendChild(txtSelloL);
+                                Element NodeSelloSatL =
+                                    document.createElement("SELLOSATL");
+                                NodeSelloSatL.appendChild(txtSelloSatL);
+                                Element NodeCadSatL =
+                                    document.createElement("CADENASATL");
+                                NodeCadSatL.appendChild(txtCadSatL);
+
+                                Element NodeFormaDePago =
+                                    document.createElement("FORMADEPAGO");
+                                NodeFormaDePago.appendChild(txtFormaDePago);
+                                Element NodeCondicionesPago =
+                                    document.createElement("CONDICIONESDEPAGO");
+                                NodeCondicionesPago.appendChild(txtCondicionesPago);
+                                Element NodeMetodoPago =
+                                    document.createElement("METODODEPAGO");
+                                Element NodeTipoComprobante = document.createElement("TIPOCOMPROBANTE");
+                                NodeTipoComprobante.appendChild(txtTipoComprobante);
+                                NodeMetodoPago.appendChild(txtMetodoPago);
+                                Element NodeSello =
+                                    document.createElement("SELLO");
+                                NodeSello.appendChild(txtSello);
+                                Element NodeExportacionFlag =
+                                    document.createElement("EXPORTACION_FLAG");
+                                NodeExportacionFlag.appendChild(txtExportacionFlag);
+                                Element NodeCadSat =
+                                    document.createElement("CAD_SAT");
+                                NodeCadSat.appendChild(txtCadSat);
+                                Element NodeSelloSat =
+                                    document.createElement("SELLOSAT");
+                                NodeSelloSat.appendChild(txtSelloSat);
+                                Element NodeFechaTimbrado =
+                                    document.createElement("FECHATIMBRADO");
+                                NodeFechaTimbrado.appendChild(txtFechaTimbrado);
+                                Element NodeNoCetificadoSat =
+                                    document.createElement("NOCERTIFICADOSAT");
+                                NodeNoCetificadoSat.appendChild(txtNoCetificadoSat);
+                                Element NodeCadenaOriginal =
+                                    document.createElement("CADENAORIGINAL");
+                                NodeCadenaOriginal.appendChild(txtCadenaOriginal);
+                                Element NodeImgQr =
+                                    document.createElement("QR");
+                                NodeImgQr.appendChild(txtImgQr);
+                                Element NodeImgen =
+                                    document.createElement("IMAGEN");
+                                NodeImgen.appendChild(txtImagen);
+                                Element NodeBuid =
+                                    document.createElement("BUID");
+                                NodeBuid.appendChild(txtBuid);
+                                Element NodeTotal =
+                                    document.createElement("TOTAL");
+                                NodeTotal.appendChild(txtTotal);
+                                Element NodeSubTotal =
+                                    document.createElement("SUBTOTAL");
+                                NodeSubTotal.appendChild(txtSubTotal);
+                                Element NodeTImpTrasladados =
+                                    document.createElement("TIMPTRASLADADOS");
+                                NodeTImpTrasladados.appendChild(txtTImpTrasladados);
+                                Element NodeTImpRetenidos =
+                                    document.createElement("TIMPRETENCION");
+                                NodeTImpRetenidos.appendChild(txtTImpRetenidos);
+                                Element NodeTasa =
+                                    document.createElement("TASA");
+                                NodeTasa.appendChild(txtTasa);
+                                Element NodeLetra =
+                                    document.createElement("LETRA");
+                                NodeLetra.appendChild(txtLetra);
+                                Element NodeLetraI =
+                                    document.createElement("LETRAI");
+                                NodeLetraI.appendChild(txtLetraI);
+                                Element NodeTertrxdate =
+                                    document.createElement("TERTRXDATE");
+                                NodeTertrxdate.appendChild(txtTertrxdate);
+
+                                Element NodeClienteFer =
+                                    document.createElement("CLIENTE_FER");
+                                NodeClienteFer.appendChild(txtClienteFer);
+                                Element NodeFacturaFer =
+                                    document.createElement("FACTURA_FER");
+                                NodeFacturaFer.appendChild(txtFacturaFer);
+                                Element NodeFechaFer =
+                                    document.createElement("FECHA_FER");
+                                NodeFechaFer.appendChild(txtFechaFer);
+                                Element NodeBeneFer =
+                                    document.createElement("BENE_FER");
+                                NodeBeneFer.appendChild(txtBeneFer);
+                                Element NodeTotalfer =
+                                    document.createElement("TOTAL_FER");
+                                NodeTotalfer.appendChild(txtTotalfer);
+                                Element NodeRefBancaria =
+                                    document.createElement("REFBAN");
+                                NodeRefBancaria.appendChild(txtRefBancaria);
+
+
+                                Element NodeCuentaBene =
+                                    document.createElement("CUENTABENE");
+                                NodeCuentaBene.appendChild(txtCuentaBene);
+                                Element NodeBanco =
+                                    document.createElement("BANCO");
+                                NodeBanco.appendChild(txtBanco);
+                                Element NodeClabeInter =
+                                    document.createElement("CLABEINTER");
+                                NodeClabeInter.appendChild(txtClabeInter);
+                                Element NodeComentarios =
+                                    document.createElement("COMMENTS");
+                                NodeComentarios.appendChild(txtComentarios);
+                                Element NodeLeyenda =
+                                    document.createElement("LEYENDA");
+                                NodeLeyenda.appendChild(txtLeyenda);
+                                Element NodeSpecialInstr =
+                                    document.createElement("SPECIALINSTRUCTIONS");
+                                NodeSpecialInstr.appendChild(txtSpecialInstr);
+
+                                Element NodeOcCliente =
+                                    document.createElement("OCCLIENTE");
+                                NodeOcCliente.appendChild(txtOcCliente);
+                                Element NodesSelloCarga =
+                                    document.createElement("SELLOCARGA");
+                                NodesSelloCarga.appendChild(txtSelloCarga);
+                                Element NodesSelloDescarga =
+                                    document.createElement("SELLODESCARGA");
+                                NodesSelloDescarga.appendChild(txtselloDescarga);
+                                Element NodesNoProveedor =
+                                    document.createElement("NOPROVEEDOR");
+                                NodesNoProveedor.appendChild(txtNoProveedor);
+                                Element NodesNoPosicion =
+                                    document.createElement("NOPOSICION");
+                                NodesNoPosicion.appendChild(txtNoPosicion);
+                                Element NodesNoGr =
+                                    document.createElement("NOGR");
+                                NodesNoGr.appendChild(txtNoGr);
+
+                                Element NodePurchaseOrder =
+                                    document.createElement("NUM_OC");
+                                if (txtPurchasOrder != null) {
+                                    NodePurchaseOrder.appendChild(txtPurchasOrder);
+                                }
+                                Element NodeRegistroFiscal =
+                                    document.createElement("NUMREGIDTRIB");
+                                NodeRegistroFiscal.appendChild(txtRegistroFiscal);
+
+                                itemNode.appendChild(NodeVersion);
+                                itemNode.appendChild(NodeSerie);
+                                itemNode.appendChild(NodeFecha);
+                                itemNode.appendChild(NodeFolio);
+                                itemNode.appendChild(NodeUuid);
+                                itemNode.appendChild(NodeNoCertificado);
+                                itemNode.appendChild(NodeMoneda);
+                                itemNode.appendChild(NodeTipoCambio);
+                                itemNode.appendChild(NodeTipoRelacion);
+                                itemNode.appendChild(NodeCfdiRelacionados);
+                                itemNode.appendChild(NodeTipoTransaccion);
+                                itemNode.appendChild(NodeTrxNumber);
+                                itemNode.appendChild(NodeNombreEmisor);
+                                itemNode.appendChild(NodeRfcEmisor);
+                                itemNode.appendChild(NodeRegimen);
+                                itemNode.appendChild(NodeETelefono);
+                                itemNode.appendChild(NodeEMunicipio);
+                                itemNode.appendChild(NodeEEstado);
+                                //
+                                itemNode.appendChild(NodeECalle);
+                                itemNode.appendChild(NodeENumExt);
+                                itemNode.appendChild(NodeENumInt);
+                                itemNode.appendChild(NodeEColonia);
+                                itemNode.appendChild(NodeELocalidad);
+                                itemNode.appendChild(NodeECP);
+                                itemNode.appendChild(NodeEPais);
+                                //
+                                itemNode.appendChild(NodeEDomicilioFiscal);
+                                itemNode.appendChild(NodeEdomiciliosuc);
+                                itemNode.appendChild(NodeRDomicilioFiscal);
+                                itemNode.appendChild(NodeCodigoL);
+                                itemNode.appendChild(NodeDescripcionL);
+                                itemNode.appendChild(NodeUnidadL);
+                                itemNode.appendChild(NodeClaveUnidadL);
+                                itemNode.appendChild(NodeClaveUProdServL);
+                                itemNode.appendChild(NodeObjetoImpL);
+                                itemNode.appendChild(NodeCantidadL);
+                                itemNode.appendChild(NodePrecioUnitL);
+                                itemNode.appendChild(NodeImporteL);
+                                itemNode.appendChild(NodetotalFacL);
+                                itemNode.appendChild(NodeCadOrigL);
+                                itemNode.appendChild(NodeSelloL);
+                                itemNode.appendChild(NodeSelloSatL);
+                                itemNode.appendChild(NodeCadSatL);
+
+                                itemNode.appendChild(NodeRfcReceptor);
+                                itemNode.appendChild(NodeNombreReceptor);
+                                itemNode.appendChild(NodeRegFiscalReceptor);
+                                itemNode.appendChild(NodeDomFiscalReceptor);
+                                itemNode.appendChild(NodeUsoCfdi);
+                                itemNode.appendChild(NodeRTelefono);
+                                itemNode.appendChild(NodeREmail);
+                                itemNode.appendChild(NodeNoCliente);
+                                itemNode.appendChild(NodeRCalle);
+                                itemNode.appendChild(NodeRMunicipio);
+                                itemNode.appendChild(NodeREstado);
+                                itemNode.appendChild(NodeRPais);
+                                itemNode.appendChild(NodeRDireccionEnvio);
+                                itemNode.appendChild(NodeClavePais);
+
+                                itemNode.appendChild(NodeFormaDePago);
+                                itemNode.appendChild(NodeCondicionesPago);
+                                itemNode.appendChild(NodeMetodoPago);
+                                itemNode.appendChild(NodeTipoComprobante);
+                                itemNode.appendChild(NodeSello);
+                                itemNode.appendChild(NodeExportacionFlag);
+                                itemNode.appendChild(NodeCadSat);
+                                itemNode.appendChild(NodeSelloSat);
+                                itemNode.appendChild(NodeFechaTimbrado);
+                                itemNode.appendChild(NodeNoCetificadoSat);
+                                itemNode.appendChild(NodeCadenaOriginal);
+                                itemNode.appendChild(NodeImgQr);
+                                itemNode.appendChild(NodeImgen);
+                                itemNode.appendChild(NodeBuid);
+                                itemNode.appendChild(NodeTotal);
+                                itemNode.appendChild(NodeSubTotal);
+                                itemNode.appendChild(NodeTImpTrasladados);
+                                itemNode.appendChild(NodeTImpRetenidos);
+                                itemNode.appendChild(NodeTasa);
+                                itemNode.appendChild(NodeLetra);
+                                itemNode.appendChild(NodeLetraI);
+                                itemNode.appendChild(NodeTertrxdate);
+                                itemNode.appendChild(NodeCtReference);
+                                itemNode.appendChild(NodeTipoDoc);
+
+                                itemNode.appendChild(NodeClienteFer);
+                                itemNode.appendChild(NodeFacturaFer);
+                                itemNode.appendChild(NodeFechaFer);
+                                itemNode.appendChild(NodeBeneFer);
+                                itemNode.appendChild(NodeTotalfer);
+                                itemNode.appendChild(NodeRefBancaria);
+
+                                itemNode.appendChild(NodeCuentaBene);
+                                itemNode.appendChild(NodeBanco);
+                                itemNode.appendChild(NodeClabeInter);
+                                itemNode.appendChild(NodeComentarios);
+                                itemNode.appendChild(NodeLeyenda);
+                                itemNode.appendChild(NodePurchaseOrder);
+                                itemNode.appendChild(NodeRegistroFiscal);
+
+                                itemNode.appendChild(NodeSpecialInstr);
+                                itemNode.appendChild(NodeOcCliente);
+                                itemNode.appendChild(NodesSelloCarga);
+                                itemNode.appendChild(NodesSelloDescarga);
+                                itemNode.appendChild(NodesNoProveedor);
+                                itemNode.appendChild(NodesNoPosicion);
+                                itemNode.appendChild(NodesNoGr);
+
+                                for (int k = 0; k <= listLineasDTO.size() - 1;
+                                     k++) {
+                                    numLinea =
+                                            listLineasDTO.get(k).getLineNumber();
+                                    codigo =
+                                            listLineasDTO.get(k).getNoIdentifiacion();
+                                    crTeference = getCrTeference();
+                                    //exportacion = listLineasDTO.get(k).getExportacion();
+                                    // validacion Kofanor
+                                    boolean rfcKofanor = (rfcEmisor != null &&
+                                                          rfcEmisor.equalsIgnoreCase("KME070921KQ1"));
+                                    if (!rfcKofanor) {
+
+                                    try {
+                                        List<LineasDTO> numCajas =
+                                            am.getNumCajas(customerTrxIdPDF,
+                                                           codigo, crTeference,
+                                                           numLinea);
+                                        for (int j = 0;
+                                             j <= numCajas.size() - 1; j++) {
+                                            cCajas =
+                                                    numCajas.get(j).getCCajas();
+                                        }
+                                    } catch (Exception e) {
+                                        System.out.println("No hay información de numero de cajas");
+                                    }
+                                    if (exportacion != null &&
+                                        exportacion.compareToIgnoreCase("Exportacion") ==
+                                        0) {
+                                        if (cCajas != 0) {
+                                            descripcion =
+                                                    cCajas + " CAJAS " + listLineasDTO.get(k).getDescripcion();
+                                        } else {
+                                            descripcion =
+                                                    listLineasDTO.get(k).getDescripcion();
+                                        }
+                                    } else {
+                                        descripcion =
+                                                listLineasDTO.get(k).getDescripcion();
+                                    }
+
+                                    String exportacionLin = null;
+                                    if (exportacion != null &&
+                                        exportacion.compareToIgnoreCase("Wal-Mart") ==
+                                        0) {
+                                        exportacionLin = "Exportacion";
+                                    } else {
+                                        exportacionLin = exportacion;
+                                    }
+                                    System.out.println("ExportacionLin: " +
+                                                       exportacionLin);
+                                    if (exportacionLin != null &&
+                                        exportacionLin.compareToIgnoreCase("Exportacion") ==
+                                        0) {
+                                        if (cCajas != 0) {
+                                            descripcion =
+                                                    cCajas + " CAJAS " + listLineasDTO.get(k).getDescripcion();
+                                        } else {
+                                            descripcion =
+                                                    listLineasDTO.get(k).getDescripcion();
+                                        }
+                                        } else {
+                                            descripcion =
+                                            listLineasDTO.get(k).getDescripcion();
+                                        }
+                                    } else {
+                                        System.out.println("Se omite cálculo de cajas para KOFANOR");
+                                        descripcion =
+                                                listLineasDTO.get(k).getDescripcion();
+                                    }
+                                    // BLOQUE 2 - Comercio Exterior
+                                    if (exportacion != null &&
+                                        exportacion.compareToIgnoreCase("Exportacion") ==
+                                        0) {
+                                        List<LineasDTO> numCajasCE =
+                                            am.getNumCajas(customerTrxIdPDF,
+                                                           codigo, crTeference,
+                                                           numLinea);
+
+                                        for (int j = 0;
+                                             j <= numCajasCE.size() - 1; j++) {
+                                            if (!rfcKofanor) {
+                                            cCajas =
+                                                    numCajasCE.get(j).getCCajas();
+                                            tCajas =
+                                                    numCajasCE.get(j).getTCajas();
+                                            if (tCajas == 0) {
+                                                if (crTeference.contains("EMB_")) {
+                                                    tCajas =
+                                                            am.getTotCajas(crTeference);
+                                                }
+                                            }
+                                            }
+                                            tLineas =
+                                                    numCajasCE.get(j).getTLineas();
+                                            grossWeight =
+                                                    numCajasCE.get(j).getPesoBruto();
+                                            contrato =
+                                                    numCajasCE.get(j).getContrato();
+                                            notaPais =
+                                                    numCajasCE.get(j).getNotaPais();
+                                            bodega =
+                                                    numCajasCE.get(j).getBodega();
+                                            incoterms =
+                                                    numCajasCE.get(j).getIncoterms();
+                                            contenedor =
+                                                    numCajasCE.get(j).getContenedor();
+                                            barco =
+                                                    numCajasCE.get(j).getBarco();
+                                            descripcion =
+                                                    listLineasDTO.get(k).getDescripcion();
+                                        }
+                                    }
+                                    unidad = listLineasDTO.get(k).getUnidad();
+                                    claveUnidad =
+                                            listLineasDTO.get(k).getClaveUnidad();
+                                    cps =
+listLineasDTO.get(k).getClaveProdServ();
+                                    cantidad =
+                                            listLineasDTO.get(k).getCantidadRel();
+                                    precio =
+                                            listLineasDTO.get(k).getValorUnitario().doubleValue();
+                                    importe =
+                                            listLineasDTO.get(k).getImporteT();
+                                    objetoImp =
+                                            listLineasDTO.get(k).getObjetoImp();
+                                    /*   System.out.println( "--> "+descripcion +" | "+ codigo +" | "+ unidad +" | "+ claveUnidad +" | "+ cps +" | "+ cantidad +" | "+ precio +" | "+ importe);
+                  */
+                                    Element NodeLine =
+                                        document.createElement("G_2");
+                                    Text txtDescripcion =
+                                        document.createTextNode(descripcion);
+                                    Text txtNumLinea =
+                                        document.createTextNode("" + numLinea);
+                                    Text txtCodigo =
+                                        document.createTextNode(codigo);
+                                    Text txtUnidad =
+                                        document.createTextNode(unidad);
+                                    Text txtClaveUnidad =
+                                        document.createTextNode(claveUnidad);
+                                    Text txtCps = document.createTextNode(cps);
+                                    Text txtCantidad =
+                                        document.createTextNode(cantidad.toString());
+                                    Text txtPrecio =
+                                        document.createTextNode(formateador.format(precio));
+                                    Text txtImporte =
+                                        document.createTextNode(formateador.format(importe));
+                                    Text txtObjetoImp =
+                                        document.createTextNode(objetoImp);
+
+                                    Text txtExportacion =
+                                        document.createTextNode(exportacion);
+                                    Text txtTotalCajas =
+                                        document.createTextNode("" + tCajas);
+                                    Text txtTotalLineas =
+                                        document.createTextNode(tLineas);
+                                    Text txtGrossWeight =
+                                        document.createTextNode("" +
+                                                                grossWeight);
+                                    Text txtContrato =
+                                        document.createTextNode(contrato);
+                                    Text txtNotaPais =
+                                        document.createTextNode(notaPais);
+                                    Text txtBodega =
+                                        document.createTextNode(bodega);
+                                    Text txtIncortems =
+                                        document.createTextNode(incoterms);
+                                    Text txtContenedor =
+                                        document.createTextNode(contenedor);
+                                    Text txtBarco =
+                                        document.createTextNode(barco);
+
+                                    Element numLinea =
+                                        document.createElement("NUMLINEA");
+                                    numLinea.appendChild(txtNumLinea);
+                                    Element NodeCodigo =
+                                        document.createElement("NOIDENTIFICACION");
+                                    NodeCodigo.appendChild(txtCodigo);
+                                    Element NodeDescripcion =
+                                        document.createElement("DESCRIPCION");
+                                    NodeDescripcion.appendChild(txtDescripcion);
+                                    Element NodeUnidad =
+                                        document.createElement("UNIDAD");
+                                    NodeUnidad.appendChild(txtUnidad);
+                                    Element NodeClaveUnidad =
+                                        document.createElement("CLAVEUNIDAD");
+                                    NodeClaveUnidad.appendChild(txtClaveUnidad);
+                                    Element NodeCps =
+                                        document.createElement("CLAVEPRODSERV");
+                                    NodeCps.appendChild(txtCps);
+                                    Element NodeCantidad =
+                                        document.createElement("CANTIDAD");
+                                    NodeCantidad.appendChild(txtCantidad);
+                                    Element NodePrecio =
+                                        document.createElement("VALORUNITARIO");
+                                    NodePrecio.appendChild(txtPrecio);
+                                    Element NodeImporte =
+                                        document.createElement("IMPORTE");
+                                    NodeImporte.appendChild(txtImporte);
+                                    Element NodeObjetoImp =
+                                        document.createElement("OBJETOIMP");
+                                    NodeObjetoImp.appendChild(txtObjetoImp);
+                                    Element NodeExportacion =
+                                        document.createElement("EXPORT");
+                                    NodeExportacion.appendChild(txtExportacion);
+                                    Element NodeTotalCajas =
+                                        document.createElement("CAJAS");
+                                    NodeTotalCajas.appendChild(txtTotalCajas);
+                                    Element NodeTotalLineas =
+                                        document.createElement("CANTIDADLIN");
+                                    NodeTotalLineas.appendChild(txtTotalLineas);
+                                    Element NodeGrossWeight =
+                                        document.createElement("PESOBRUTO");
+                                    NodeGrossWeight.appendChild(txtGrossWeight);
+                                    Element NodeContrato =
+                                        document.createElement("CONTRATO");
+                                    NodeContrato.appendChild(txtContrato);
+                                    Element NodeNotaPais =
+                                        document.createElement("NOTAPAIS");
+                                    NodeNotaPais.appendChild(txtNotaPais);
+                                    Element NodeBodega =
+                                        document.createElement("BODEGA");
+                                    NodeBodega.appendChild(txtBodega);
+                                    Element NodeInconterms =
+                                        document.createElement("INCOTERMS");
+                                    NodeInconterms.appendChild(txtIncortems);
+                                    Element NodeContenedor =
+                                        document.createElement("CONTENEDOR");
+                                    NodeContenedor.appendChild(txtContenedor);
+                                    Element NodeBarco =
+                                        document.createElement("BARCO");
+                                    NodeBarco.appendChild(txtBarco);
+
+                                    itemNode.appendChild(NodeLine);
+
+                                    NodeLine.appendChild(numLinea);
+                                    NodeLine.appendChild(NodeCodigo);
+                                    NodeLine.appendChild(NodeDescripcion);
+                                    NodeLine.appendChild(NodeUnidad);
+                                    NodeLine.appendChild(NodeClaveUnidad);
+                                    NodeLine.appendChild(NodeCps);
+                                    NodeLine.appendChild(NodeCantidad);
+                                    NodeLine.appendChild(NodePrecio);
+                                    NodeLine.appendChild(NodeImporte);
+                                    NodeLine.appendChild(NodeObjetoImp);
+                                    NodeLine.appendChild(NodeExportacion);
+                                    NodeLine.appendChild(NodeTotalCajas);
+                                    NodeLine.appendChild(NodeTotalLineas);
+                                    NodeLine.appendChild(NodeGrossWeight);
+                                    NodeLine.appendChild(NodeContrato);
+                                    NodeLine.appendChild(NodeNotaPais);
+                                    NodeLine.appendChild(NodeInconterms);
+                                    NodeLine.appendChild(NodeContenedor);
+                                    NodeLine.appendChild(NodeBarco);
+                                    NodeLine.appendChild(NodeBodega);
+                                }
+
+                                for (int l = 0; l <= listComExt.size() - 1;
+                                     l++) {
+                                    fraccionArancelaria =
+                                            listComExt.get(l).getFraccionArancelaria();
+                                    unidadAduana =
+                                            listComExt.get(l).getUnidadAduana();
+                                    valorUnitAduana =
+                                            listComExt.get(l).getValorUnitarioAduana();
+                                    cantidadAduana =
+                                            listComExt.get(l).getCantidadAduana();
+                                    valorDolares =
+                                            listComExt.get(l).getValorDolares();
+
+                                    Element NodeCE =
+                                        document.createElement("COMERCIO_EXTERIOR");
+
+                                    Text txtFraccionArancelaria =
+                                        document.createTextNode(fraccionArancelaria);
+                                    Text txtUnidadAduana =
+                                        document.createTextNode(unidadAduana);
+                                    Text txtValorUnitario =
+                                        document.createTextNode(valorUnitAduana);
+                                    Text txtCantidadAduana =
+                                        document.createTextNode(cantidadAduana);
+                                    Text txtValorDolares =
+                                        document.createTextNode(valorDolares);
+
+                                    Element NodeFraccionArancelaria =
+                                        document.createElement("FRACCIONARANCELARIA");
+                                    NodeFraccionArancelaria.appendChild(txtFraccionArancelaria);
+                                    Element NodeUnidadAduana =
+                                        document.createElement("UNIDADADUANA");
+                                    NodeUnidadAduana.appendChild(txtUnidadAduana);
+                                    Element NodeValorUnitario =
+                                        document.createElement("VALORUNITARIOADUANA");
+                                    NodeValorUnitario.appendChild(txtValorUnitario);
+                                    Element NodeCantidadAduana =
+                                        document.createElement("CANTIDADADUANA");
+                                    NodeCantidadAduana.appendChild(txtCantidadAduana);
+                                    Element NodeValorDolares =
+                                        document.createElement("VALORDOLARES");
+                                    NodeValorDolares.appendChild(txtValorDolares);
+
+                                    itemNode.appendChild(NodeCE);
+
+                                    NodeCE.appendChild(NodeFraccionArancelaria);
+                                    NodeCE.appendChild(NodeUnidadAduana);
+                                    NodeCE.appendChild(NodeValorUnitario);
+                                    NodeCE.appendChild(NodeCantidadAduana);
+                                    NodeCE.appendChild(NodeValorDolares);
+                                }
+
+                                for (int j = 0; j <= cpMaster.size() - 1;
+                                     j++) {
+
+                                    folioCP = cpMaster.get(j).getFolio();
+                                    serieCP = cpMaster.get(j).getSerie();
+                                    rfcEmpresa =
+                                            cpMaster.get(j).getRfcEmpresa();
+                                    nombreEmpresa =
+                                            cpMaster.get(j).getNombreEmpresa();
+                                    tipoDocumentoCP =
+                                            cpMaster.get(j).getTipoDocumento();
+                                    /*idOracleClient = rsA.getString("ID_ORACLE_CLIEN");
+                rfcClient = rsA.getString("RFC_CLIEN");
+                nombreClient = rsA.getString("NOMBRE_CLIEN");
+                estadoClient = rsA.getString("ESTADO_CLIEN");
+                localiClient = rsA.getString("LOCALI_CLIEN");
+                municipioClient = rsA.getString("MUNICIP_CLIEN");
+                colClient = rsA.getString("COL_CLIEN");
+                paisClient = rsA.getString("PAIS_CLIEN");*/
+                                    nombreChofer =
+                                            cpMaster.get(j).getNombreChofer();
+                                    System.out.println("Nombre del Chofer: " +
+                                                       nombreChofer);
+                                    licChofer = cpMaster.get(j).getLicChofer();
+                                    calleChofer =
+                                            cpMaster.get(j).getCalleChofer();
+                                    rfcChofer = cpMaster.get(j).getRfcChofer();
+                                    paisChofer =
+                                            cpMaster.get(j).getPaisChofer();
+                                    colChofer = cpMaster.get(j).getColChofer();
+                                    numCChofer =
+                                            cpMaster.get(j).getNumCChofer();
+                                    municipioChofer =
+                                            cpMaster.get(j).getMunicipioChofer();
+                                    locChofer = cpMaster.get(j).getLocChofer();
+                                    estadoChofer =
+                                            cpMaster.get(j).getEstadoChofer();
+                                    cpChofer = cpMaster.get(j).getCpChofer();
+                                    fechaLlegada =
+                                            cpMaster.get(j).getFechaLlegada();
+                                    //*************************
+                                    for (int k = 0;
+                                         k <= listCPUbicaciones.size() - 1;
+                                         k++) {
+                                        if (listCPUbicaciones.get(k).getTipoUbicacion().equalsIgnoreCase("Origen")) {
+                                            calleOrigen =
+                                                    listCPUbicaciones.get(k).getCalle();
+                                            estadoOrigen =
+                                                    listCPUbicaciones.get(k).getEstado();
+                                            localidadOrigen =
+                                                    listCPUbicaciones.get(k).getLocalidad();
+                                            municipioOrigen =
+                                                    listCPUbicaciones.get(k).getMunicipio();
+                                            coloniaOrigen =
+                                                    listCPUbicaciones.get(k).getColonia();
+                                            paisOrigen =
+                                                    listCPUbicaciones.get(k).getPais();
+                                            codigoPostalOrigen =
+                                                    listCPUbicaciones.get(k).getCodigoPostal();
+                                        } else {
+                                            calleDestino =
+                                                    listCPUbicaciones.get(k).getCalle();
+                                            estadoDestino =
+                                                    listCPUbicaciones.get(k).getEstado();
+                                            localidadDestino =
+                                                    listCPUbicaciones.get(k).getLocalidad();
+                                            municipioDestino =
+                                                    listCPUbicaciones.get(k).getMunicipio();
+                                            coloniaDestino =
+                                                    listCPUbicaciones.get(k).getColonia();
+                                            paisDestino =
+                                                    listCPUbicaciones.get(k).getPais();
+                                            codigoPostalDestino =
+                                                    listCPUbicaciones.get(k).getCodigoPostal();
+                                        }
+                                    }
+                                    //********
+                                    placasVehicular =
+                                            cpMaster.get(j).getPlacasVehicular();
+                                    tipoVehicular =
+                                            cpMaster.get(j).getTipoVehicular() + " - " + cpMaster.get(j).getDescVehiculo();
+                                    remolque = cpMaster.get(j).getRemolque() + " - " + cpMaster.get(j).getDescRemolque1();
+                                    tipoRemolque1 = cpMaster.get(j).getTipoRemolque1() + " - " + cpMaster.get(j).getDescRemolque1();
+                                    tipoRemolque2 = cpMaster.get(j).getTipoRemolque2() + " - " + cpMaster.get(j).getDescRemolque2();;
+                                    placaRemolque1 = cpMaster.get(j).getPlacaRem1();
+                                    placaRemolque2 = cpMaster.get(j).getPlacaRem2();
+
+                                    distanciaRecorrida =
+                                            cpMaster.get(j).getDistanciaRecorrida();
+                                    //
+                                    tipoFigura =
+                                            cpMaster.get(j).getTipoFigura() + " - " + cpMaster.get(i).getDescOperador();
+                                    parteTransporte =
+                                            cpMaster.get(j).getParteTransporte();
+                                    permSCT = cpMaster.get(j).getPermSCT() + " - " + cpMaster.get(i).getDescPermiso();
+                                    anioModeloVM = cpMaster.get(j).getAnioModeloVM();
+                                    pesoBrutoVehicular = cpMaster.get(i).getPesoBrutoVehicular();//Actualizacion 3.0
+                                    nombreAseg =
+                                            cpMaster.get(j).getNombreAseg();
+                                    numPolizaSeg =
+                                            cpMaster.get(j).getNumPolizaSeg();
+                                    pesoBrutoTotal =
+                                            cpMaster.get(j).getPesoBrutoTotal();
+                                    numTotalMercancias =
+                                            cpMaster.get(j).getNumTotalMercancias();
+                                    pesototKilos =
+                                            cpMaster.get(j).getPesototKilos();
+                                    transpInternac =
+                                            cpMaster.get(j).getTranspInternac();
+                                    numPermisoSCT =
+                                            cpMaster.get(j).getNumPermisoSCT();
+                                    cveTransporte =
+                                            cpMaster.get(j).getCveTransporte();
+                                    versionCP = cpMaster.get(j).getVersion();
+                                    idCCP = cpMaster.get(i).getIdCCP();//Actualizacion 3.0
+                                    Element NodeCPMASTER =
+                                        document.createElement("CARTA_PORTE");
+
+                                    Text txtfolioCP =
+                                        document.createTextNode(folioCP);
+                                    Text txtserieCP =
+                                        document.createTextNode(serieCP);
+                                    Text txtrfcEmpresa =
+                                        document.createTextNode(rfcEmpresa);
+                                    Text txtnombreEmpresa =
+                                        document.createTextNode(nombreEmpresa);
+                                    Text txttipoDocumentoCP =
+                                        document.createTextNode(tipoDocumentoCP);
+                                    /*idOracleClient = rsA.getString("ID_ORACLE_CLIEN");
+                Text txtrfcClient = rsA.getString("RFC_CLIEN");
+                Text txtnombreClient = rsA.getString("NOMBRE_CLIEN");
+                Text txtestadoClient = rsA.getString("ESTADO_CLIEN");
+                Text txtlocaliClient = rsA.getString("LOCALI_CLIEN");
+                Text txtmunicipioClient = rsA.getString("MUNICIP_CLIEN");
+                Text txtcolClient = rsA.getString("COL_CLIEN");
+                Text txtpaisClient = rsA.getString("PAIS_CLIEN");*/
+                                    Text txtnombreChofer =
+                                        document.createTextNode(nombreChofer);
+                                    Text txtlicChofer =
+                                        document.createTextNode(licChofer);
+                                    Text txtcalleChofer =
+                                        document.createTextNode(calleChofer);
+                                    Text txtrfcChofer =
+                                        document.createTextNode(rfcChofer);
+                                    Text txtpaisChofer =
+                                        document.createTextNode(paisChofer);
+                                    Text txtcolChofer =
+                                        document.createTextNode(colChofer);
+                                    Text txtnumCChofer =
+                                        document.createTextNode(numCChofer);
+                                    Text txtmunicipioChofer =
+                                        document.createTextNode(municipioChofer);
+                                    Text txtlocChofer =
+                                        document.createTextNode(locChofer);
+                                    Text txtestadoChofer =
+                                        document.createTextNode(estadoChofer);
+                                    Text txtcpChofer =
+                                        document.createTextNode(cpChofer);
+                                    Text txtfechaLlegada =
+                                        document.createTextNode(fechaLlegada);
+                                    Text txtCalleOrigen =
+                                        document.createTextNode(calleOrigen);
+                                    Text txtestadoOrigen =
+                                        document.createTextNode(estadoOrigen);
+                                    Text txtlocalidadOrigen =
+                                        document.createTextNode(localidadOrigen);
+                                    /*Text txtmunicipioOrigen =
+                                        document.createTextNode(municipioOrigen);*/
+                                    Text txtcoloniaOrigen =
+                                        document.createTextNode(coloniaOrigen);
+                                    Text txtpaisOrigen =
+                                        document.createTextNode(paisOrigen);
+                                    Text txtcodigoPostalOrigen =
+                                        document.createTextNode(codigoPostalOrigen);
+                                    Text txtplacasVehicular =
+                                        document.createTextNode(placasVehicular);
+                                    Text txttipoVehicular =
+                                        document.createTextNode(tipoVehicular);
+                                    Text txtremolque =
+                                        document.createTextNode(remolque);
+                                    Text txtTipoRemolque1 =
+                                        document.createTextNode(tipoRemolque1);
+                                    Text txtTipoRemolque2 =
+                                        document.createTextNode(tipoRemolque2);
+
+                                    Text txtdistanciaRecorrida =
+                                        document.createTextNode(distanciaRecorrida);
+                                    Text txtCalleDestino =
+                                        document.createTextNode(calleDestino);
+                                    Text txtestadoDestino =
+                                        document.createTextNode(estadoDestino);
+                                    Text txtlocalidadDestino =
+                                        document.createTextNode(localidadDestino);
+                                   /* Text txtmunicipioDestino =
+                                        document.createTextNode(municipioDestino);*/
+                                    Text txtcoloniaDestino =
+                                        document.createTextNode(coloniaDestino);
+                                    Text txtpaisDestino =
+                                        document.createTextNode(paisDestino);
+                                    Text txtcodigoPostalDestino =
+                                        document.createTextNode(codigoPostalDestino);
+                                    //
+                                    Text txttipoFigura =
+                                        document.createTextNode(tipoFigura);
+                                    Text txtparteTransporte =
+                                        document.createTextNode(parteTransporte);
+                                    Text txtpermSCT =
+                                        document.createTextNode(permSCT);
+                                    Text txtanioModeloVM =
+                                        document.createTextNode(anioModeloVM);
+                                    Text txtPesoBrutoVehicular = document.createTextNode(pesoBrutoVehicular);//Actualizacion 3.0
+                                    Text txtnombreAseg =
+                                        document.createTextNode(nombreAseg);
+                                    Text txtnumPolizaSeg =
+                                        document.createTextNode(numPolizaSeg);
+                                    Text txtpesoBrutoTotal =
+                                        document.createTextNode(pesoBrutoTotal);
+                                    Text txtnumTotalMercancias =
+                                        document.createTextNode(numTotalMercancias);
+                                    Text txtpesototKilos =
+                                        document.createTextNode(pesototKilos);
+                                    Text txttranspInternac =
+                                        document.createTextNode(transpInternac);
+                                    Text txtnumPermisoSCT =
+                                        document.createTextNode(numPermisoSCT);
+                                    Text txtcveTransporte =
+                                        document.createTextNode(cveTransporte);
+                                    Text txtversionCP =
+                                        document.createTextNode(versionCP);
+                                    Text txtIdCCP = document.createTextNode(idCCP);//Actualizacion 3.0
+
+                                    //
+                                    Element NodefolioCP =
+                                        document.createElement("FOLIOCP");
+                                    NodefolioCP.appendChild(txtfolioCP);
+                                    Element NodeserieCP =
+                                        document.createElement("SERIECP");
+                                    NodeserieCP.appendChild(txtserieCP);
+                                    Element NoderfcEmpresa =
+                                        document.createElement("RFCEMPRESA");
+                                    NoderfcEmpresa.appendChild(txtrfcEmpresa);
+                                    Element NodenombreEmpresa =
+                                        document.createElement("NOMBREEMPRESA");
+                                    NodenombreEmpresa.appendChild(txtnombreEmpresa);
+                                    Element NodetipoDocumentoCP =
+                                        document.createElement("TIPODUCOMENTO");
+                                    NodetipoDocumentoCP.appendChild(txttipoDocumentoCP);
+                                    /*idOracleClient = rsA.getString("ID_ORACLE_CLIEN");
+                Element NoderfcClient = rsA.getString("RFC_CLIEN");
+                Element NodenombreClient = rsA.getString("NOMBRE_CLIEN");
+                Element NodeestadoClient = rsA.getString("ESTADO_CLIEN");
+                Element NodelocaliClient = rsA.getString("LOCALI_CLIEN");
+                Element NodemunicipioClient = rsA.getString("MUNICIP_CLIEN");
+                Element NodecolClient = rsA.getString("COL_CLIEN");
+                Element NodepaisClient = rsA.getString("PAIS_CLIEN");*/
+                                    Element NodenombreChofer =
+                                        document.createElement("NOMBRECHOFER");
+                                    NodenombreChofer.appendChild(txtnombreChofer);
+                                    Element NodelicChofer =
+                                        document.createElement("LICCHOFER");
+                                    NodelicChofer.appendChild(txtlicChofer);
+                                    Element NodecalleChofer =
+                                        document.createElement("CALLECHOFER");
+                                    NodecalleChofer.appendChild(txtcalleChofer);
+                                    Element NoderfcChofer =
+                                        document.createElement("RFCCHOFER");
+                                    NoderfcChofer.appendChild(txtrfcChofer);
+                                    Element NodepaisChofer =
+                                        document.createElement("PAISCHOFER");
+                                    NodepaisChofer.appendChild(txtpaisChofer);
+                                    Element NodecolChofer =
+                                        document.createElement("COLCHOFER");
+                                    NodecolChofer.appendChild(txtcolChofer);
+                                    Element NodenumCChofer =
+                                        document.createElement("NUMCHOFER");
+                                    NodenumCChofer.appendChild(txtnumCChofer);
+                                    Element NodemunicipioChofer =
+                                        document.createElement("MUNICIPIOCHOFER");
+                                    NodemunicipioChofer.appendChild(txtmunicipioChofer);
+                                    Element NodelocChofer =
+                                        document.createElement("LOCCHOFER");
+                                    NodelocChofer.appendChild(txtlocChofer);
+                                    Element NodeestadoChofer =
+                                        document.createElement("ESTADOCHOFER");
+                                    NodeestadoChofer.appendChild(txtestadoChofer);
+                                    Element NodecpChofer =
+                                        document.createElement("CPCHOFER");
+                                    NodecpChofer.appendChild(txtcpChofer);
+                                    Element NodefechaLlegada =
+                                        document.createElement("FECHALLEGADA");
+                                    NodefechaLlegada.appendChild(txtfechaLlegada);
+                                    ///
+                                    Element NodeCalleOrigen =
+                                        document.createElement("CALLEORIGEN");
+                                    NodeCalleOrigen.appendChild(txtCalleOrigen);
+                                    Element NodeestadoOrigen =
+                                        document.createElement("ESTADOORIGEN");
+                                    NodeestadoOrigen.appendChild(txtestadoOrigen);
+                                    Element NodelocalidadOrigen =
+                                        document.createElement("LOCORIGEN");
+                                    NodelocalidadOrigen.appendChild(txtlocalidadOrigen);
+                                    /* Element NodemunicipioOrigen = document.createElement("MUNICIPIOORIGEN");
+                NodemunicipioOrigen.appendChild(txtmunicipioOrigen);*/
+                                    Element NodecoloniaOrigen =
+                                        document.createElement("COLONIAORIGEN");
+                                    NodecoloniaOrigen.appendChild(txtcoloniaOrigen);
+                                    Element NodepaisOrigen =
+                                        document.createElement("PAISORIGEN");
+                                    NodepaisOrigen.appendChild(txtpaisOrigen);
+                                    Element NodecodigoPostalOrigen =
+                                        document.createElement("CPORIGEN");
+                                    NodecodigoPostalOrigen.appendChild(txtcodigoPostalOrigen);
+                                    //
+                                    Element NodeplacasVehicular =
+                                        document.createElement("PLACASVEHICULAR");
+                                    NodeplacasVehicular.appendChild(txtplacasVehicular);
+                                    Element NodetipoVehicular =
+                                        document.createElement("TIPOVEHICULAR");
+                                    NodetipoVehicular.appendChild(txttipoVehicular);
+                                    Element Noderemolque =
+                                        document.createElement("REMOLQUE");
+                                    Noderemolque.appendChild(txtremolque);
+                                    Element NodeTipoRemolque1 =
+                                        document.createElement("TIPOREMOLQUE1");
+                                    NodeTipoRemolque1.appendChild(txtTipoRemolque1);
+                                    Element NodeTipoRemolque2 =
+                                        document.createElement("TIPOREMOLQUE2");
+                                    NodeTipoRemolque2.appendChild(txtTipoRemolque2);
+
+                                    Element NodedistanciaRecorrida =
+                                        document.createElement("DISTANCIARECORRIDA");
+                                    NodedistanciaRecorrida.appendChild(txtdistanciaRecorrida);
+                                    ///
+                                    Element NodeCalleDestino =
+                                        document.createElement("CALLEDESTINO");
+                                    NodeCalleDestino.appendChild(txtCalleDestino);
+                                    Element NodeestadoDestino =
+                                        document.createElement("ESTADODESTINO");
+                                    NodeestadoDestino.appendChild(txtestadoDestino);
+                                    Element NodelocalidadDestino =
+                                        document.createElement("LOCDESTINO");
+                                    NodelocalidadDestino.appendChild(txtlocalidadDestino);
+                                    /* Element NodemunicipioOrigen = document.createElement("MUNICIPIOORIGEN");
+                NodemunicipioOrigen.appendChild(txtmunicipioOrigen);*/
+                                    Element NodecoloniaDestino =
+                                        document.createElement("COLONIADESTINO");
+                                    NodecoloniaDestino.appendChild(txtcoloniaDestino);
+                                    Element NodepaisDestino =
+                                        document.createElement("PAISDESTINO");
+                                    NodepaisDestino.appendChild(txtpaisDestino);
+                                    Element NodecodigoPostalDestino =
+                                        document.createElement("CPDESTINO");
+                                    NodecodigoPostalDestino.appendChild(txtcodigoPostalDestino);
+                                    //
+                                    //
+                                    Element NodetipoFigura =
+                                        document.createElement("TIPOFIGURA");
+                                    NodetipoFigura.appendChild(txttipoFigura);
+                                    Element NodeparteTransporte =
+                                        document.createElement("PARTETRANSPORTE");
+                                    NodeparteTransporte.appendChild(txtparteTransporte);
+                                    Element NodepermSCT =
+                                        document.createElement("PERMSCT");
+                                    NodepermSCT.appendChild(txtpermSCT);
+                                    Element NodeanioModeloVM =
+                                        document.createElement("ANIOMODELOVM");
+                                    NodeanioModeloVM.appendChild(txtanioModeloVM);
+                                    Element NodePesoBrutoVehicular =
+                                        document.createElement("PESOBRUTOVEHICULAR");
+                                    NodePesoBrutoVehicular.appendChild(txtPesoBrutoVehicular);//Actualizacion 3.0
+                                    Element NodenombreAseg =
+                                        document.createElement("NOMBREASEG");
+                                    NodenombreAseg.appendChild(txtnombreAseg);
+                                    Element NodenumPolizaSeg =
+                                        document.createElement("NUMPOLIZASEG");
+                                    NodenumPolizaSeg.appendChild(txtnumPolizaSeg);
+                                    Element NodepesoBrutoTotal =
+                                        document.createElement("PESOBRUTALTOTAL");
+                                    NodepesoBrutoTotal.appendChild(txtpesoBrutoTotal);
+                                    Element NodenumTotalMercancias =
+                                        document.createElement("NUMTOTALMERCANCIAS");
+                                    NodenumTotalMercancias.appendChild(txtnumTotalMercancias);
+                                    Element NodepesototKilos =
+                                        document.createElement("PESOTOTKILOS");
+                                    NodepesototKilos.appendChild(txtpesototKilos);
+                                    Element NodetranspInternac =
+                                        document.createElement("TRANSPINTERNAC");
+                                    NodetranspInternac.appendChild(txttranspInternac);
+                                    Element NodenumPermisoSCT =
+                                        document.createElement("NUMPERMISOSCT");
+                                    NodenumPermisoSCT.appendChild(txtnumPermisoSCT);
+                                    Element NodecveTransporte =
+                                        document.createElement("CVETRANSPORTE");
+                                    NodecveTransporte.appendChild(txtcveTransporte);
+                                    Element NodeversionCP =
+                                        document.createElement("VERSIONCP");
+                                    NodeversionCP.appendChild(txtversionCP);
+                                    Element NodeIdCCP = document.createElement("IDCCP"); //Actualizacion 3.0
+                                    NodeIdCCP.appendChild(txtIdCCP);
+                                    itemNode.appendChild(NodeCPMASTER);
+
+                                    NodeCPMASTER.appendChild(NodefolioCP);
+                                    NodeCPMASTER.appendChild(NodeserieCP);
+                                    NodeCPMASTER.appendChild(NoderfcEmpresa);
+                                    NodeCPMASTER.appendChild(NodenombreEmpresa);
+                                    NodeCPMASTER.appendChild(NodetipoDocumentoCP);
+                                    /*idOracleClient = rsA.getString("ID_ORACLE_CLIEN");
+                NodeCPMASTER.appendChild(NoderfcClient = rsA.getString("RFC_CLIEN");
+                NodeCPMASTER.appendChild(NodenombreClient = rsA.getString("NOMBRE_CLIEN");
+                NodeCPMASTER.appendChild(NodeestadoClient = rsA.getString("ESTADO_CLIEN");
+                NodeCPMASTER.appendChild(NodelocaliClient = rsA.getString("LOCALI_CLIEN");
+                NodeCPMASTER.appendChild(NodemunicipioClient = rsA.getString("MUNICIP_CLIEN");
+                NodeCPMASTER.appendChild(NodecolClient = rsA.getString("COL_CLIEN");
+                NodeCPMASTER.appendChild(NodepaisClient = rsA.getString("PAIS_CLIEN");*/
+                                    NodeCPMASTER.appendChild(NodenombreChofer);
+                                    NodeCPMASTER.appendChild(NodelicChofer);
+                                    NodeCPMASTER.appendChild(NodecalleChofer);
+                                    NodeCPMASTER.appendChild(NoderfcChofer);
+                                    NodeCPMASTER.appendChild(NodepaisChofer);
+                                    NodeCPMASTER.appendChild(NodecolChofer);
+                                    NodeCPMASTER.appendChild(NodenumCChofer);
+                                    NodeCPMASTER.appendChild(NodemunicipioChofer);
+                                    NodeCPMASTER.appendChild(NodelocChofer);
+                                    NodeCPMASTER.appendChild(NodeestadoChofer);
+                                    NodeCPMASTER.appendChild(NodecpChofer);
+                                    NodeCPMASTER.appendChild(NodefechaLlegada);
+                                    //
+                                    NodeCPMASTER.appendChild(NodeCalleOrigen);
+                                    NodeCPMASTER.appendChild(NodeestadoOrigen);
+                                    NodeCPMASTER.appendChild(NodelocalidadOrigen);
+                                    //NodeCPMASTER.appendChild(NodemunicipioOrigen);
+                                    NodeCPMASTER.appendChild(NodecoloniaOrigen);
+                                    NodeCPMASTER.appendChild(NodepaisOrigen);
+                                    NodeCPMASTER.appendChild(NodecodigoPostalOrigen);
+                                    //
+                                    NodeCPMASTER.appendChild(NodeplacasVehicular);
+                                    NodeCPMASTER.appendChild(NodetipoVehicular);
+                                    NodeCPMASTER.appendChild(NodeTipoRemolque1);
+                                    NodeCPMASTER.appendChild(NodeTipoRemolque2);
+                                    NodeCPMASTER.appendChild(Noderemolque);
+
+                                    NodeCPMASTER.appendChild(NodedistanciaRecorrida);
+                                    //
+                                    NodeCPMASTER.appendChild(NodeCalleDestino);
+                                    NodeCPMASTER.appendChild(NodeestadoDestino);
+                                    NodeCPMASTER.appendChild(NodelocalidadDestino);
+                                    //NodeCPMASTER.appendChild(NodemunicipioDestino);
+                                    NodeCPMASTER.appendChild(NodecoloniaDestino);
+                                    NodeCPMASTER.appendChild(NodepaisDestino);
+                                    NodeCPMASTER.appendChild(NodecodigoPostalDestino);
+                                    //
+                                    NodeCPMASTER.appendChild(NodetipoFigura);
+                                    NodeCPMASTER.appendChild(NodeparteTransporte);
+                                    NodeCPMASTER.appendChild(NodepermSCT);
+                                    NodeCPMASTER.appendChild(NodeanioModeloVM);
+                                    NodeCPMASTER.appendChild(NodePesoBrutoVehicular);//Actualizacion 3.0
+                                    NodeCPMASTER.appendChild(NodenombreAseg);
+                                    NodeCPMASTER.appendChild(NodenumPolizaSeg);
+                                    NodeCPMASTER.appendChild(NodepesoBrutoTotal);
+                                    NodeCPMASTER.appendChild(NodenumTotalMercancias);
+                                    NodeCPMASTER.appendChild(NodepesototKilos);
+                                    NodeCPMASTER.appendChild(NodetranspInternac);
+                                    NodeCPMASTER.appendChild(NodenumPermisoSCT);
+                                    NodeCPMASTER.appendChild(NodecveTransporte);
+                                    NodeCPMASTER.appendChild(NodeversionCP);
+                                    NodeCPMASTER.appendChild(NodeIdCCP); //Actualizacion 3.0
+                                }
+
+
+                                for (int l = 0; l <= cpDetails.size() - 1;
+                                     l++) {
+
+                                    // folioCP = cpMaster.get(l).getFolio();
+                                    idCP = cpDetails.get(l).getId();
+                                    idCPMaster =
+                                            cpDetails.get(l).getIdCPMaster();
+                                    codigoCP = cpDetails.get(l).getClaveSat();
+                                    descripcionCP =
+                                            cpDetails.get(l).getDescripcion();
+                                    System.out.println("descripcionCP: " +
+                                                       descripcionCP);
+                                    unidadCP = cpDetails.get(l).getUnidad();
+                                    claveSatCP =
+                                            cpDetails.get(l).getClaveSat();
+                                    cantidadCP =
+                                            cpDetails.get(l).getCantidad();
+                                    precioUnitarioCP =
+                                            cpDetails.get(l).getPrecioUnitario();
+                                    pesoKgCP = cpDetails.get(l).getPesoKg();
+
+                                    Element NodeCPDET =
+                                        document.createElement("CARTA_PORTE_DETAILS");
+
+                                    Text txtid = document.createTextNode(idCP);
+                                    Text txtidCPMaster =
+                                        document.createTextNode(idCPMaster);
+                                    Text txtcodigoCP =
+                                        document.createTextNode(codigoCP);
+                                    Text txtdescripcionCP =
+                                        document.createTextNode(descripcionCP);
+                                    Text txtunidadCP =
+                                        document.createTextNode(unidadCP);
+                                    Text txtclaveSatCP =
+                                        document.createTextNode(claveSatCP);
+                                    Text txtcantidadCP =
+                                        document.createTextNode(cantidadCP);
+                                    Text txtprecioUnitarioCP =
+                                        document.createTextNode(precioUnitarioCP);
+                                    Text txtpesoKgCP =
+                                        document.createTextNode(pesoKgCP);
+
+                                    //
+                                    Element Nodeid =
+                                        document.createElement("IDCP");
+                                    Nodeid.appendChild(txtid);
+                                    Element NodeidCPMaster =
+                                        document.createElement("IDCPMASTER");
+                                    NodeidCPMaster.appendChild(txtidCPMaster);
+                                    Element NodecodigoCP =
+                                        document.createElement("CODIGOCP");
+                                    NodecodigoCP.appendChild(txtcodigoCP);
+                                    Element NodedescripcionCP =
+                                        document.createElement("DESCRIPCIONCP");
+                                    NodedescripcionCP.appendChild(txtdescripcionCP);
+                                    Element NodeunidadCP =
+                                        document.createElement("UNIDADCP");
+                                    NodeunidadCP.appendChild(txtunidadCP);
+                                    Element NodeclaveSatCP =
+                                        document.createElement("CLAVESATCP");
+                                    NodeclaveSatCP.appendChild(txtclaveSatCP);
+                                    Element NodecantidadCP =
+                                        document.createElement("CANTIDADCP");
+                                    NodecantidadCP.appendChild(txtcantidadCP);
+                                    Element NodeprecioUnitarioCP =
+                                        document.createElement("PRECIOUNITARIOCP");
+                                    NodeprecioUnitarioCP.appendChild(txtprecioUnitarioCP);
+                                    Element NodepesoKgCP =
+                                        document.createElement("PESOKGCP");
+                                    NodepesoKgCP.appendChild(txtpesoKgCP);
+
+                                    itemNode.appendChild(NodeCPDET);
+
+                                    NodeCPDET.appendChild(Nodeid);
+                                    NodeCPDET.appendChild(NodeidCPMaster);
+                                    NodeCPDET.appendChild(NodecodigoCP);
+                                    NodeCPDET.appendChild(NodedescripcionCP);
+                                    NodeCPDET.appendChild(NodeunidadCP);
+                                    NodeCPDET.appendChild(NodeclaveSatCP);
+                                    NodeCPDET.appendChild(NodecantidadCP);
+                                    NodeCPDET.appendChild(NodeprecioUnitarioCP);
+                                    NodeCPDET.appendChild(NodepesoKgCP);
+                                }
+
+                                //append itemNode to raiz
+                                raiz.appendChild(itemNode);
+                                Source source = new DOMSource(document);
+                                //Indicamos donde lo queremos almacenar
+                                Result resultt =
+                                    new StreamResult(new java.io.File("C:\\pdf\\xml\\NewDataSource.xml"));
+                                ByteArrayOutputStream os =
+                                    new ByteArrayOutputStream();
+                                Result result = new StreamResult(os);
+
+                                Transformer transformer =
+                                    TransformerFactory.newInstance().newTransformer();
+                                transformer.transform(source, result);
+                                transformer.transform(source, resultt);
+
+                                dataSource =
+                                        new ByteArrayInputStream(os.toByteArray());
+                            } catch (ParserConfigurationException e) {
+                                System.out.println(e.getMessage());
+                            } catch (TransformerConfigurationException tx) {
+                                System.out.println(tx.getMessage());
+                            } catch (TransformerException tax) {
+                                System.out.println(tax.getMessage());
+                            }
+
+                            ByteArrayOutputStream docPdf =
+                                new ByteArrayOutputStream();
+                            InputStream documentoPDF = null;
+
+                            InputStream xsl = null;
+                            InputStream rtf = null;
+                            //rtf = am.getRtf("templateFactura");
+                            // System.out.println("Organizacion PDF: " + nombreEmisor);
+                            if (nombreEmisor.contains("ALIMENTOS")) {
+                                rtf = am.getRtf("templateKowi");
+                            } else {
+                                rtf = am.getRtf("templateFactura");
+                            }
+                            ByteArrayOutputStream xslout =
+                                new ByteArrayOutputStream();
+                            RTFProcessor processorr;
+                            try {
+                                processorr = new RTFProcessor(rtf);
+                                processorr.setOutput(xslout);
+                                processorr.process();
+                            } catch (XDOException xdo) {
+                                System.out.println(xdo.getExceptionMsg());
+                            }
+                            System.out.println("BIEN....................");
+
+                            xsl =
+new ByteArrayInputStream(xslout.toByteArray());
+
+                            FOProcessor processor = new FOProcessor();
+                            processor.setData(dataSource); // set XML input file "  C:\\pdf\\xml\\NewDataSource.xml"
+                            processor.setTemplate(xsl); // set XSL input file"          C:\\pdf\\cfdi33.xsl"
+                            processor.setOutput(docPdf); //set output file"       C:\\pdf\\TemplateBuilder.pdf"
+
+                            // Start processing
+                            try {
+                                processor.generate();
+                            } catch (XDOException e) {
+                                e.printStackTrace();
+                                System.out.println(e.getMessage());
+                            }
+
+
+                            byte[] file = docPdf.toByteArray();
+
+                            documentoPDF = new ByteArrayInputStream(file);
+
+
+                            am.updateInsertPDF(customerTrxIdPDF,
+                                               new ByteArrayInputStream(file));
+
+                        } catch (Exception e) {
+                            e.printStackTrace();
+                        }
+                    }
+                    break;
+                }
+                liberarAppModule();
+                /* if(conDB != null) {
+               Configuration.releaseRootApplicationModule(conDB, true);
+            } */
+            }
+
+        };
+
+        th.start();
+
+    }
+
+    public final void setMsgTimbre(String msgTimbre) {
+        this.msgTimbre = msgTimbre;
+    }
+
+    public final String getMsgTimbre() {
+        return msgTimbre;
+    }
+
+    public final void setUuid(String uuid) {
+        this.uuid = uuid;
+    }
+
+    public final String getUuid() {
+        return uuid;
+    }
+
+    public final void setTrxNumber(String trxNumber) {
+        this.trxNumber = trxNumber;
+    }
+
+    public final String getTrxNumber() {
+        return trxNumber;
+    }
+
+    public void setTimbrado(RichPanelFormLayout timbrado) {
+        this.timbrado = timbrado;
+    }
+
+    public RichPanelFormLayout getTimbrado() {
+        return timbrado;
+    }
+
+    public final void setCustomerTrxId(String customerTrxId) {
+        this.customerTrxId = customerTrxId;
+    }
+
+    public final String getCustomerTrxId() {
+        return customerTrxId;
+    }
+
+    public void setCrTeference(String crTeference) {
+        this.crTeference = crTeference;
+    }
+
+    public String getCrTeference() {
+        return crTeference;
+    }
+
+    private void liberarAppModule() {
+        Configuration.releaseRootApplicationModule(AppModule, true);
+    }
+
+    private void createAppModule() {
+        String appmoddos = "com.itg.DE.Utils.AppModuleDE";
+        String confignamedos = "AppModuleDELocal";
+        ApplicationModule amdos =
+            Configuration.createRootApplicationModule(appmoddos,
+                                                      confignamedos);
+        AppModule = (AppModuleDEImpl)amdos;
+        am = new AppModuleEFImpl(AppModule);
+    }
+
+    public void setFolio(String folio) {
+        this.folio = folio;
+    }
+
+    public String getFolio() {
+        return folio;
+    }
+}
